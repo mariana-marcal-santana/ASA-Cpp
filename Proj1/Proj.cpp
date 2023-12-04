@@ -24,7 +24,6 @@ int calcMaxPrice(std::vector<std::vector<int>>& m, int X, int Y) {
 
 int main() {
 
-    std::string userInput;
     int X, Y, n;
     
     if (!scanf("%d %d", &X, &Y));
