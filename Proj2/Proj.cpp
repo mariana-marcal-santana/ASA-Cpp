@@ -30,7 +30,7 @@ int main() {
         if (!scanf("%d %d", &x, &y));
 
         if (0 < x <= n && 0 < y <= n) {
-            matrix[x-1][y-1] = 1;
+            matrix[x - 1][y - 1] = 1;
         }
     }
 
