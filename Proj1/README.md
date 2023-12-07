@@ -1,1 +1,1 @@
-Project realized during our classes of Algorithm Analysis and Synthesis
+Dynamic Programming adaptation of the Knapsack algorithm for 2 dimensions
