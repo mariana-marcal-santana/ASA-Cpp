@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <stack>
 #include <limits>
 
@@ -58,33 +59,56 @@ class Graph {
             }
         }
         // Find and set SCCs on a vector with DFS of transposed graph
-        void DFS2(int v, std::vector<bool>& visited, std::vector<int>& scc, int indexSCC) {
+        void DFS2(int v, std::vector<bool>& visited, std::vector<int>& results, std::vector<int>& scc, int indexSCC) {
             // Initialize stack with starting vertex and set SCC
             std::stack<int> dfsStack;
             dfsStack.push(v);
             visited[v] = true;
             scc[v] = indexSCC;
-            
+            std::stack<int> currentSCC;
+            int max = 0;
+
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
                 dfsStack.pop();
+                currentSCC.push(currentVertex);
+
                 for (int neighbor : adjListT[currentVertex]) {
+                    max = max > results[neighbor] ? max : results[neighbor];
                     if (!visited[neighbor]) {
                         visited[neighbor] = true;
                         // Set neighbor as part of the same SCC
                         scc[neighbor] = indexSCC;
+                        currentSCC.push(neighbor);
                         dfsStack.push(neighbor);
+                    }
+                    if (scc[neighbor] != scc[currentVertex]) { 
+                        results[currentVertex] = std::max(results[currentVertex], results[neighbor] + 1);
+                    }
+                    if (scc[neighbor] == scc[currentVertex]) { 
+                        results[currentVertex] = std::max(max, results[currentVertex]);
+                        results[neighbor] = results[currentVertex]; 
                     }
                 }
             }
+            int maxSCC = 0;
+            std::stack<int> currentSCC2 = currentSCC;
+            while (!currentSCC2.empty()) {
+                maxSCC = maxSCC > results[currentSCC2.top()] ? maxSCC : results[currentSCC2.top()];
+                currentSCC2.pop();
+            }
+            while (!currentSCC.empty()) {
+                results[currentSCC.top()] = maxSCC;
+                currentSCC.pop();
+            }
         }
-
-        // Function to find SCCs with Kosaraju's algorithm
+        // Finds SCCs with Kosaraju's algorithm and returns the longest path between SCCs
         void findSCCs() {
 
             std::stack<int> descendingEndTimes;
             std::vector<bool> visited(V + 1, false);
             std::vector<int> scc(V + 1, 0);
+            std::vector<int> results(V + 1, 0);
             int indexSCC = 1;
 
             // Set vertices in stack according to finishing times of DFS
@@ -100,13 +124,18 @@ class Graph {
                 descendingEndTimes.pop();
                 // If the vertix hasn't been visited, it belongs to a new SCC
                 if (!visited[v]) {
-                    DFS2(v, visited, scc, indexSCC);
+                    DFS2(v, visited, results, scc, indexSCC);
                     indexSCC++;
                 }
             }
             printf("SCC: ");
             for (int i = 1; i <= V; i++) { printf("%d ", scc[i]); }
             printf("\n");
+            printf("Results: ");
+            for (int i = 1; i <= V; i++) { printf("%d ", results[i]); }
+            printf("\n");
+            auto max = std::max_element(results.begin(), results.end());
+            printf("%d\n", *max);
         }
 };
 
