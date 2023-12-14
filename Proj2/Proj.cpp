@@ -30,6 +30,8 @@ class Graph {
         // Add edge to adjacency list and its transposed to the transposed adjacency list
         void addEdge(int v, int w) {
             adjList[v].push_back(w);
+            //adjList[v].insert(adjList[v].begin(), w);
+            //adjListT[w].insert(adjListT[w].begin(), v);
             adjListT[w].push_back(v);
         }
         // DFS and fill the stack with vertices in order of finishing time
@@ -66,7 +68,7 @@ class Graph {
             visited[v] = true;
             scc[v] = indexSCC;
             std::stack<int> currentSCC;
-            int max = 0;
+            int max = 0, maxSCC = 0;
 
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
@@ -74,7 +76,7 @@ class Graph {
                 currentSCC.push(currentVertex);
 
                 for (int neighbor : adjListT[currentVertex]) {
-                    max = max > results[neighbor] ? max : results[neighbor];
+                    max = max > results[neighbor] ? max : results[neighbor]; // ????
                     if (!visited[neighbor]) {
                         visited[neighbor] = true;
                         // Set neighbor as part of the same SCC
@@ -87,11 +89,10 @@ class Graph {
                     }
                     if (scc[neighbor] == scc[currentVertex]) { 
                         results[currentVertex] = std::max(max, results[currentVertex]);
-                        results[neighbor] = results[currentVertex]; 
                     }
                 }
             }
-            int maxSCC = 0;
+            // Set SCC's results to the maximum result of the SCC
             std::stack<int> currentSCC2 = currentSCC;
             while (!currentSCC2.empty()) {
                 maxSCC = maxSCC > results[currentSCC2.top()] ? maxSCC : results[currentSCC2.top()];
