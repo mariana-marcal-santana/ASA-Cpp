@@ -30,8 +30,6 @@ class Graph {
         // Add edge to adjacency list and its transposed to the transposed adjacency list
         void addEdge(int v, int w) {
             adjList[v].push_back(w);
-            //adjList[v].insert(adjList[v].begin(), w);
-            //adjListT[w].insert(adjListT[w].begin(), v);
             adjListT[w].push_back(v);
         }
         // DFS and fill the stack with vertices in order of finishing time
@@ -67,33 +65,41 @@ class Graph {
             dfsStack.push(v);
             visited[v] = true;
             scc[v] = indexSCC;
-            std::stack<int> currentSCC;
-            int max = 0, maxSCC = 0;
+            std::stack<int> currentSCC, currentSCC2;
+            int maxSCC = 0;
+            bool hasNonVisitedNeighbor = false;
 
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
                 dfsStack.pop();
-                currentSCC.push(currentVertex);
-
+                hasNonVisitedNeighbor = false;
+                //currentSCC.push(currentVertex);
                 for (int neighbor : adjListT[currentVertex]) {
-                    max = max > results[neighbor] ? max : results[neighbor]; // ????
                     if (!visited[neighbor]) {
                         visited[neighbor] = true;
-                        // Set neighbor as part of the same SCC
-                        scc[neighbor] = indexSCC;
-                        currentSCC.push(neighbor);
+                        hasNonVisitedNeighbor = true;
                         dfsStack.push(neighbor);
+                        break;
                     }
-                    if (scc[neighbor] != scc[currentVertex]) { 
-                        results[currentVertex] = std::max(results[currentVertex], results[neighbor] + 1);
-                    }
-                    if (scc[neighbor] == scc[currentVertex]) { 
-                        results[currentVertex] = std::max(max, results[currentVertex]);
+                }
+                if (!hasNonVisitedNeighbor) {
+                    currentSCC.push(currentVertex);
+                    scc[currentVertex] = indexSCC;
+                  
+                    for (int neighbor : adjListT[currentVertex]) {
+                        // Belongs to a different SCC
+                        if (scc[neighbor] != scc[currentVertex]) { 
+                            results[currentVertex] = std::max(results[neighbor] + 1, results[currentVertex]);
+                        }
+                        // Belongs to the same SCC
+                        else if (scc[neighbor] == scc[currentVertex]) {
+                            results[currentVertex] = std::max(results[neighbor], results[currentVertex]);
+                        }
                     }
                 }
             }
             // Set SCC's results to the maximum result of the SCC
-            std::stack<int> currentSCC2 = currentSCC;
+            currentSCC2 = currentSCC;
             while (!currentSCC2.empty()) {
                 maxSCC = maxSCC > results[currentSCC2.top()] ? maxSCC : results[currentSCC2.top()];
                 currentSCC2.pop();
