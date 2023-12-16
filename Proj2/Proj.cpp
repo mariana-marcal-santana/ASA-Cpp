@@ -83,16 +83,16 @@ class Graph {
                 }
                 if (!hasNonVisitedNeighbor) {
                     dfsStack.pop();
-                    currentSCC.push(currentVertex);
                     scc[currentVertex] = indexSCC;
-                  
+            
+                    currentSCC.push(currentVertex);
                     for (int neighbor : adjListT[currentVertex]) {
                         // Belongs to a different SCC
-                        if (scc[neighbor] != scc[currentVertex]) { 
+                        if (scc[neighbor] != scc[currentVertex] && scc[neighbor] != 0) { 
                             results[currentVertex] = std::max(results[neighbor] + 1, results[currentVertex]);
                         }
                         // Belongs to the same SCC
-                        else if (scc[neighbor] == scc[currentVertex]) {
+                        else if (scc[neighbor] == scc[currentVertex] && scc[neighbor] != 0) {
                             results[currentVertex] = std::max(results[neighbor], results[currentVertex]);
                         }
                     }
@@ -122,7 +122,7 @@ class Graph {
             for (int i = 1; i < V; i++) {
                 if (!visited[i]) { DFS1(i, visited, descendingEndTimes); }
             }
-            //printStack(descendingEndTimes);
+            printStack(descendingEndTimes);
             // Reset visited array for DFS2
             fill(visited.begin(), visited.end(), false);
             // Process vertices in order defined by the finishing times
@@ -135,12 +135,12 @@ class Graph {
                     indexSCC++;
                 }
             }
-            /*printf("SCC: ");
+            printf("SCC: ");
             for (int i = 1; i <= V; i++) { printf("%d ", scc[i]); }
             printf("\n");
             printf("Results: ");
             for (int i = 1; i <= V; i++) { printf("%d ", results[i]); }
-            printf("\n");*/
+            printf("\n");
             auto max = std::max_element(results.begin(), results.end());
             printf("%d\n", *max);
         }
