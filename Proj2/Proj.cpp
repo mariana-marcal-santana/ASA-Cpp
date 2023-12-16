@@ -72,9 +72,7 @@ class Graph {
 
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
-                //dfsStack.pop();
                 hasNonVisitedNeighbor = false;
-                //currentSCC.push(currentVertex);
                 for (int neighbor : adjListT[currentVertex]) {
                     if (!visited[neighbor]) {
                         visited[neighbor] = true;
