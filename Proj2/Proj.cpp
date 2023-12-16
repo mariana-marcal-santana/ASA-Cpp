@@ -48,6 +48,7 @@ class Graph {
                         visited[neighbor] = true;
                         hasNonVisitedNeighbor = true;
                         dfsStack.push(neighbor);
+                        break;
                     }
                 }
                 // If all vertex's neighbors were visited, the DFS on the vertex finished
@@ -71,7 +72,7 @@ class Graph {
 
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
-                dfsStack.pop();
+                //dfsStack.pop();
                 hasNonVisitedNeighbor = false;
                 //currentSCC.push(currentVertex);
                 for (int neighbor : adjListT[currentVertex]) {
@@ -83,6 +84,7 @@ class Graph {
                     }
                 }
                 if (!hasNonVisitedNeighbor) {
+                    dfsStack.pop();
                     currentSCC.push(currentVertex);
                     scc[currentVertex] = indexSCC;
                   
@@ -122,7 +124,7 @@ class Graph {
             for (int i = 1; i < V; i++) {
                 if (!visited[i]) { DFS1(i, visited, descendingEndTimes); }
             }
-            printStack(descendingEndTimes);
+            //printStack(descendingEndTimes);
             // Reset visited array for DFS2
             fill(visited.begin(), visited.end(), false);
             // Process vertices in order defined by the finishing times
@@ -135,12 +137,12 @@ class Graph {
                     indexSCC++;
                 }
             }
-            printf("SCC: ");
+            /*printf("SCC: ");
             for (int i = 1; i <= V; i++) { printf("%d ", scc[i]); }
             printf("\n");
             printf("Results: ");
             for (int i = 1; i <= V; i++) { printf("%d ", results[i]); }
-            printf("\n");
+            printf("\n");*/
             auto max = std::max_element(results.begin(), results.end());
             printf("%d\n", *max);
         }
