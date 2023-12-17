@@ -9,17 +9,6 @@
 #include <vector>
 #include <algorithm>
 #include <stack>
-#include <limits>
-
-void printStack(std::stack<int> stack) {
-    printf("Stack:");
-    std::stack<int> stack2 = stack;
-    while (!stack2.empty()) {
-        printf("%d ", stack2.top());
-        stack2.pop();
-    }
-    printf("\n");
-}
 
 class Graph {
     public:
@@ -156,7 +145,5 @@ int main() {
         }
     }
     g.calcMaxSpread();
-
     return 0;
 }
-
