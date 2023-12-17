@@ -62,11 +62,10 @@ class Graph {
         // Find and set SCCs on a vector with DFS of transposed graph
         void DFS2(int v, std::vector<bool>& visited, std::vector<int>& results, std::vector<int>& scc, int indexSCC) {
             // Initialize stack with starting vertex and set SCC
-            std::stack<int> dfsStack;
+            std::stack<int> dfsStack, currentSCC, currentSCC2;
             dfsStack.push(v);
             visited[v] = true;
             scc[v] = indexSCC;
-            std::stack<int> currentSCC, currentSCC2;
             int maxSCC = 0;
             bool hasNonVisitedNeighbor = false;
 
@@ -84,7 +83,6 @@ class Graph {
                 if (!hasNonVisitedNeighbor) {
                     dfsStack.pop();
                     scc[currentVertex] = indexSCC;
-            
                     currentSCC.push(currentVertex);
                     for (int neighbor : adjListT[currentVertex]) {
                         // Belongs to a different SCC
@@ -92,7 +90,7 @@ class Graph {
                             results[currentVertex] = std::max(results[neighbor] + 1, results[currentVertex]);
                         }
                         // Belongs to the same SCC
-                        else if (scc[neighbor] == scc[currentVertex] && scc[neighbor] != 0) {
+                        else if (scc[neighbor] == scc[currentVertex]) {
                             results[currentVertex] = std::max(results[neighbor], results[currentVertex]);
                         }
                     }
@@ -110,19 +108,17 @@ class Graph {
             }
         }
         // Finds SCCs with Kosaraju's algorithm and returns the longest path between SCCs
-        void findSCCs() {
+        void calcMaxSpread() {
 
             std::stack<int> descendingEndTimes;
             std::vector<bool> visited(V + 1, false);
             std::vector<int> scc(V + 1, 0);
             std::vector<int> results(V + 1, 0);
             int indexSCC = 1;
-
             // Set vertices in stack according to finishing times of DFS
-            for (int i = 1; i < V; i++) {
+            for (int i = 1; i <= V; i++) {
                 if (!visited[i]) { DFS1(i, visited, descendingEndTimes); }
             }
-            printStack(descendingEndTimes);
             // Reset visited array for DFS2
             fill(visited.begin(), visited.end(), false);
             // Process vertices in order defined by the finishing times
@@ -135,12 +131,6 @@ class Graph {
                     indexSCC++;
                 }
             }
-            printf("SCC: ");
-            for (int i = 1; i <= V; i++) { printf("%d ", scc[i]); }
-            printf("\n");
-            printf("Results: ");
-            for (int i = 1; i <= V; i++) { printf("%d ", results[i]); }
-            printf("\n");
             auto max = std::max_element(results.begin(), results.end());
             printf("%d\n", *max);
         }
@@ -150,7 +140,7 @@ int main() {
     int n, m;
     if (!scanf("%d %d", &n, &m)) {}
 
-    if (n < 2 || m < 1) {
+    if (n < 2 || m < 0) {
         printf("0\n");
         return 0;
     }
@@ -165,7 +155,7 @@ int main() {
             g.addEdge(x, y);
         }
     }
-    g.findSCCs();
+    g.calcMaxSpread();
 
     return 0;
 }
