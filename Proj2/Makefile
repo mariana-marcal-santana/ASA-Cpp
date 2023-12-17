@@ -19,6 +19,8 @@ $(EXE): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
+	rm -f *.d
+	rm -f *.out
 	rm -f $(OBJ) $(EXE)
 
 run: $(EXE)
