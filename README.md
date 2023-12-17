@@ -4,6 +4,6 @@
 
 Proj 1: Dynamic Programming adaptation of the Knapsack algorithm for 2 dimensions;
 
-Proj 2:
+Proj 2: Adaptation of the Kosaraju's algorithm to count the maximum number of connections between SCCs in a graph;
 
 Proj 3:
