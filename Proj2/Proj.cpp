@@ -99,21 +99,21 @@ class Graph {
         // Finds SCCs with Kosaraju's algorithm and returns the longest path between SCCs
         void calcMaxSpread() {
 
-            std::stack<int> descendingEndTimes;
+            std::stack<int> descEndTimes;
             std::vector<bool> visited(V + 1, false);
             std::vector<int> scc(V + 1, 0);
             std::vector<int> results(V + 1, 0);
             int indexSCC = 1;
             // Set vertices in stack according to finishing times of DFS
             for (int i = 1; i <= V; i++) {
-                if (!visited[i]) { DFS1(i, visited, descendingEndTimes); }
+                if (!visited[i]) { DFS1(i, visited, descEndTimes); }
             }
             // Reset visited array for DFS2
             fill(visited.begin(), visited.end(), false);
             // Process vertices in order defined by the finishing times
-            while (!descendingEndTimes.empty()) {
-                int v = descendingEndTimes.top();
-                descendingEndTimes.pop();
+            while (!descEndTimes.empty()) {
+                int v = descEndTimes.top();
+                descEndTimes.pop();
                 // If the vertix hasn't been visited, it belongs to a new SCC
                 if (!visited[v]) {
                     DFS2(v, visited, results, scc, indexSCC);
