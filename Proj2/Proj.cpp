@@ -61,6 +61,7 @@ class Graph {
             while (!dfsStack.empty()) {
                 int currentVertex = dfsStack.top();
                 hasNonVisitedNeighbor = false;
+                // Add neighbor vertices to stack if they haven't been visited
                 for (int neighbor : adjListT[currentVertex]) {
                     if (!visited[neighbor]) {
                         visited[neighbor] = true;
@@ -69,6 +70,7 @@ class Graph {
                         break;
                     }
                 }
+                // If all vertex's neighbors were visited, the DFS on the vertex finished
                 if (!hasNonVisitedNeighbor) {
                     dfsStack.pop();
                     scc[currentVertex] = indexSCC;
@@ -98,7 +100,6 @@ class Graph {
         }
         // Finds SCCs with Kosaraju's algorithm and returns the longest path between SCCs
         void calcMaxSpread() {
-
             std::stack<int> descEndTimes;
             std::vector<bool> visited(V + 1, false);
             std::vector<int> scc(V + 1, 0);
@@ -120,6 +121,7 @@ class Graph {
                     indexSCC++;
                 }
             }
+            // Check for the maximum result and print it
             auto max = std::max_element(results.begin(), results.end());
             printf("%d\n", *max);
         }
