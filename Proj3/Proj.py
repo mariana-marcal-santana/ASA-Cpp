@@ -5,11 +5,18 @@ Project made by:
     João Rodrigues (106221)
 """
 
+from pulp import *
+
 def main():
+    # Create problem
+    prob = LpProblem("toyFactory", LpMaximize)
     # Read input
     t, p, max = map(int, input().split())
-    n = t
-    for i in range(n):
+    ntp = t + p
+
+    x = [None] + [LpVariable(f"x{i+1}", 0, None, LpInteger) for i in range(ntp)]
+
+    for i in range(t):
         l, c = map(int, input().split())
     for j in range(p):
         i, j, k, l = map(int, input().split())
