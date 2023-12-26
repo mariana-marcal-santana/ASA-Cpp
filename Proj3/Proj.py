@@ -10,29 +10,40 @@ from pulp import *
 def main():
     # Create problem
     prob = LpProblem("toyFactory", LpMaximize)
-    # Initialize lists for data
-    ls = []
-    cs = []
     # Read input
-    count = 0
-    user_input = input("write input: ")
-    t, p, max = map(int, user_input.split())
-    
-    x = [None] + [LpVariable(f"x{i+1}", 0, None, LpInteger) for i in range(t + p)]
-
-    for i in range(t):
+    t, p, max = map(int, input().split())
+    # Initialize lists for data
+    ls = [0] * (t + p + 1)
+    cs = [0] * (t + 1)
+    # Create list of LP variables
+    x = [None] + [LpVariable(f"x{i + 1}", 0, None, LpInteger) for i in range(t + p)]
+    # Individual toys
+    for n in range(t):
         l, c = map(int, input().split())
-        ls.append(l)
-        cs.append(c)
-        prob += x[i + 1] <= c, f"constraint {i + 1}"
-        count += 1
-
-    for j in range(p):
+        ls[n + 1] = l
+        cs[n + 1] = c
+        # Individual production constraint
+        prob += x[n + 1] <= c, f"constraint {n + 1}"
+    # Toy sets
+    for m in range(p):
         i, j, k, l = map(int, input().split())
-        ls.append(l)
-
+        ls[m + t + 1] = l
+    # Max production constraint
     prob += lpSum([x[i] for i in range(1, len(x))]) <= max, "constraint max"
+    # Set objective function
+    prob += lpSum([x[i] for i in range(1, len(x))]), "objective function"
     prob += lpSum([x[i] * l[i] for i in range(1, len(x))]), "objective function"
-    prob.solve()
+
+    print(ls)
+    print(cs)
+
+    prob.solve(GLPK(msg = 0))
+
+    if LpStatus[prob.status] != "Optimal":
+        print("Infeasible")
+    else:
+        print(value(prob.objective))
+        for v in prob.variables():
+            print(v.name, "=", v.varValue)
 
 main()

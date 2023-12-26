@@ -9,7 +9,7 @@ a = [2, 4, 3, 7]
 po = [3, 2, ]
 
 #Add goal
-prob += LpSum([x[i] * l[i] for i in range(1, len(x))]), "objective function"
+prob += lpSum([x[i] * l[i] for i in range(1, len(x))]), "objective function"
 prob# += 1.5 * x[1] + 2.5 * x[2] + 3 * x[3] + 4.5 * x[4], "objective function"
 
 prob += 2 * x[1] + 4 * x[2] + 3 * x[3] + 7 * x[4] <= 100000, "assembly restriction"
