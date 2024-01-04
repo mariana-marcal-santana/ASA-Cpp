@@ -1,4 +1,4 @@
-# ASA-Cpp
+# ASA-Cpp-Python
 
 3 Projects made during Analysis and Synthesis of Algorithms class:
 
