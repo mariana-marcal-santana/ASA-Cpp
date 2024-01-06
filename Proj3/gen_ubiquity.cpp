@@ -1,7 +1,5 @@
-/*****************************************************************
- * IST - ASA 23/24 - Projecto 3 - UbiquityInc instance generator *
- *****************************************************************/
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -9,14 +7,11 @@
 
 using namespace std;
 
-// Returns a random value between [0, m-1]
 #define randomValue(m) (rand() % m)
 
 int _T, _P;
 int _Tcmin, _Tcmax, _Tlmax;
 int _Pok;
-
-//-----------------------------------------------------------------------------
 
 void printUsage(char *progname) {
   cerr << "Usage: " << progname << " <T> <P> <Tcmin> <Tcmax> <Tlmax> <Pok> <seed>" << endl;
@@ -26,7 +21,7 @@ void printUsage(char *progname) {
   cerr << "  Tcmax: Toy max capacity" << endl;
   cerr << "  Tlmax: Toy max profit" << endl;
   cerr << "  Pok: % valid packs [0,100]" << endl;
-  cerr << "  seed: random seed generator (opcional)" << endl;
+  cerr << "  seed: random seed generator (optional)" << endl;
   exit(1);
 }
 
@@ -71,39 +66,50 @@ void parseArgs(int argc, char **argv) {
 }
 
 int main(int argc, char *argv[]) {
-  int maxCap = 0;
   parseArgs(argc, argv);
 
-  vector<pair<int,int>> toys;
-  vector<int> randomToys;
-  for (int i = 0; i < _T; i++) {
-    int profit_i = randomValue(_Tlmax + 1);
-    int max_i    = randomValue(_Tcmax - _Tcmin + 1) + _Tcmin;
-    toys.push_back(make_pair(profit_i, max_i));
-    randomToys.push_back(i+1);
-    maxCap += max_i;
+  ofstream outFile("output.out"); // Abre o arquivo de saída
+
+  for (int nToys = 10; nToys <= 140; nToys += 10) {
+    for (int nSets = 5; nSets <= 70; nSets += 5) {
+      int maxCap = 0;
+
+      vector<pair<int, int>> toys;
+      vector<int> randomToys;
+      for (int i = 0; i < nToys; i++) {
+        int profit_i = randomValue(_Tlmax + 1);
+        int max_i = randomValue(_Tcmax - _Tcmin + 1) + _Tcmin;
+        toys.push_back(make_pair(profit_i, max_i));
+        randomToys.push_back(i + 1);
+        maxCap += max_i;
+      }
+
+      // limit max capacity to [75, 95]% of Sum(toy_i_cap)
+      maxCap = (float)maxCap * (95 - randomValue(10)) / 100;
+      outFile << nToys << " " << nSets << " " << maxCap << endl; // Escreve no arquivo
+
+      // Print Toys
+      for (pair<int, int> p : toys) {
+        outFile << p.first << " " << p.second << endl; // Escreve no arquivo
+      }
+
+      // Print packs
+      int p_profit;
+      for (int i = 0; i < nSets; i++) {
+        random_shuffle(randomToys.begin(), randomToys.end());
+        p_profit = (toys[randomToys[0]].first + toys[randomToys[1]].first + toys[randomToys[2]].first) * 1.1;
+        int v = randomValue(100 + 1);
+        if (v > _Pok)
+          p_profit *= 0.9;
+        else
+          p_profit *= 1.1;
+        outFile << randomToys[0] << " " << randomToys[1] << " " << randomToys[2] << " " << p_profit << endl; // Escreve no arquivo
+      }
+      outFile << endl;  // Adiciona uma linha em branco para separar as instâncias
+    }
   }
 
-  // limit max capacity to [75, 95]% of Sum(toy_i_cap)
-  maxCap = (float)maxCap * (95 - randomValue(10))/100;
-  printf("%d %d %d\n", _T, _P, maxCap);
-
-  // Print Toys
-  for (pair<int, int> p : toys) {
-    printf("%d %d\n", p.first, p.second);
-  }
-
-  // Print packs
-  int p_profit;
-  for (int i = 0; i < _P; i++) {
-    random_shuffle(randomToys.begin(), randomToys.end());
-    p_profit = (toys[randomToys[0]].first + toys[randomToys[1]].first
-      + toys[randomToys[2]].first) * 1.1;
-    int v = randomValue(100+1);
-    if (v > _Pok) p_profit *= 0.9;
-    else p_profit *= 1.1;
-    printf("%d %d %d %d\n", randomToys[0], randomToys[1], randomToys[2], p_profit);
-  }
+  outFile.close(); // Fecha o arquivo de saída
 
   return 0;
 }
