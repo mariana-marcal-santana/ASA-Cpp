@@ -8,6 +8,7 @@ def resolver_e_escrever_output(input_filename, output_filename):
     with open(input_filename, 'r') as file:
         # Read input from file
         t, p, max = map(int, file.readline().split())
+        time_1 = time()
         # Initialize lists for data
         ls, cs, x = [0], [0], [None]
         sets = [[i] for i in range(t + 1)]
@@ -37,12 +38,13 @@ def resolver_e_escrever_output(input_filename, output_filename):
     
     # Solve problem
     prob.solve(GLPK(msg=0))
-    
+    time_2 = time()
     # Write output to file
     with open(output_filename, 'w') as output_file:
         if LpStatus[prob.status] != "Optimal":
             output_file.write("Infeasible")
         else:
+            output_file.write("Time: " + str(time_2 - time_1) + "\n")
             output_file.write(str(value(prob.objective)))
 
 def main():
@@ -56,4 +58,7 @@ def main():
         resolver_e_escrever_output(input_filename, output_filename)
 
 if __name__ == "__main__":
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
     main()
