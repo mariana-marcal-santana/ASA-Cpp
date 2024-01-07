@@ -1,17 +1,24 @@
+/*****************************************************************
+ * IST - ASA 23/24 - Projecto 3 - UbiquityInc instance generator *
+ *****************************************************************/
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <list>
 #include <algorithm>
 #include <unordered_set>
+#include <fstream>  // Adicionando a biblioteca para manipulação de arquivos
 
 using namespace std;
 
+
+// Returns a random value between [0, m-1]
 #define randomValue(m) (rand() % m)
 
-int _T , _P;
+int _T, _P;
 int _Tcmin, _Tcmax, _Tlmax;
 int _Pok;
+
+//-----------------------------------------------------------------------------
 
 void printUsage(char *progname) {
   cerr << "Usage: " << progname << " <T> <P> <Tcmin> <Tcmax> <Tlmax> <Pok> <seed>" << endl;
@@ -21,7 +28,7 @@ void printUsage(char *progname) {
   cerr << "  Tcmax: Toy max capacity" << endl;
   cerr << "  Tlmax: Toy max profit" << endl;
   cerr << "  Pok: % valid packs [0,100]" << endl;
-  cerr << "  seed: random seed generator (optional)" << endl;
+  cerr << "  seed: random seed generator (opcional)" << endl;
   exit(1);
 }
 
@@ -66,69 +73,62 @@ void parseArgs(int argc, char **argv) {
 }
 
 int main(int argc, char *argv[]) {
+  int maxCap = 0;
+  parseArgs(argc, argv);
 
+  string fileName;
+  cout << "Digite o nome do arquivo para salvar o output: ";
+  cin >> fileName;
 
-  ofstream outFile("output.out"); // Abre o arquivo de saída
-
-  vector<pair<int, int>> instances = {
-    {10, 5},
-    {15, 10},
-    {20, 15},
-    {25, 20},
-    {30, 15},
-    {40, 20},
-    {50, 25},
-    {60, 30},
-    {70, 35},
-    {80, 40},
-    {90, 45},
-    {100, 50},
-    {110, 55},
-    {120, 60},
-    {130, 65},
-    {140, 70}
-  };
-
-  for (auto &instance : instances) {
-    int nToys = instance.first;
-    int nSets = instance.second;
-    int maxCap = 0;
-
-    vector<pair<int, int>> toys;
-    vector<int> randomToys;
-    for (int i = 0; i < nToys; i++) {
-      int profit_i = randomValue(_Tlmax + 1);
-      int max_i = randomValue(_Tcmax - _Tcmin + 1) + _Tcmin;
-      toys.push_back(make_pair(profit_i, max_i));
-      randomToys.push_back(i + 1);
-      maxCap += max_i;
-    }
-
-    // limit max capacity to [75, 95]% of Sum(toy_i_cap)
-    maxCap = (float)maxCap * (95 - randomValue(10)) / 100;
-    outFile << nToys << " " << nSets << " " << maxCap << endl; // Escreve no arquivo
-
-    // Print Toys
-    for (pair<int, int> p : toys) {
-      outFile << p.first << " " << p.second << endl; // Escreve no arquivo
-    }
-
-    // Print packs
-    int p_profit;
-    for (int i = 0; i < nSets; i++) {
-      random_shuffle(randomToys.begin(), randomToys.end());
-      p_profit = (toys[randomToys[0]].first + toys[randomToys[1]].first + toys[randomToys[2]].first) * 1.1;
-      int v = randomValue(100 + 1);
-      if (v > _Pok)
-        p_profit *= 0.9;
-      else
-        p_profit *= 1.1;
-      outFile << randomToys[0] << " " << randomToys[1] << " " << randomToys[2] << " " << p_profit << endl; // Escreve no arquivo
-    }
-    outFile << endl;  // Adiciona uma linha em branco para separar as instâncias
+  // Abrir o arquivo para escrita
+  ofstream outputFile(fileName);
+  if (!outputFile.is_open()) {
+    cerr << "Erro ao abrir o arquivo para escrita." << endl;
+    return 1;
   }
 
-  outFile.close(); // Fecha o arquivo de saída
+  // Redirecionar a saída para o arquivo
+  streambuf *coutbuf = cout.rdbuf();
+  cout.rdbuf(outputFile.rdbuf());
+
+  vector<pair<int, int>> toys;
+  vector<int> randomToys;
+  for (int i = 0; i < _T; i++) {
+    int profit_i = randomValue(_Tlmax + 1);
+    int max_i = randomValue(_Tcmax - _Tcmin + 1) + _Tcmin;
+    toys.push_back(make_pair(profit_i, max_i));
+    randomToys.push_back(i + 1);
+    maxCap += max_i;
+  }
+
+  // limit max capacity to [75, 95]% of Sum(toy_i_cap)
+  maxCap = (float)maxCap * (95 - randomValue(10)) / 100;
+  cout << _T << " " << _P << " " << maxCap << endl;
+
+  // Print Toys
+  for (pair<int, int> p : toys) {
+    cout << p.first << " " << p.second << endl;
+  }
+
+  // Print packs
+  int p_profit;
+  for (int i = 0; i < _P; i++) {
+    random_shuffle(randomToys.begin(), randomToys.end());
+    p_profit = (toys[randomToys[0]].first + toys[randomToys[1]].first + toys[randomToys[2]].first) * 1.1;
+    int v = randomValue(100 + 1);
+    if (v > _Pok)
+      p_profit *= 0.9;
+    else
+      p_profit *= 1.1;
+    cout << randomToys[0] << " " << randomToys[1] << " " << randomToys[2] << " " << p_profit << endl;
+  }
+
+  // Restaurar a saída padrão
+  cout.rdbuf(coutbuf);
+
+  // Fechar o arquivo
+  outputFile.close();
 
   return 0;
 }
+

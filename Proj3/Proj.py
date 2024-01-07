@@ -43,7 +43,7 @@ def main():
     prob.solve(GLPK(msg = 0))
     time_2=time()
     # Print solution
-    print(f"Time: {time_2-time_1}")
+    print(f"{time_2-time_1:.4f}")
     if LpStatus[prob.status] != "Optimal":
         print("Infeasible")
     else:
