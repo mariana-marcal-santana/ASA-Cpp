@@ -6,14 +6,12 @@ Project made by:
 """
 
 from pulp import *
-from time import *
 
 def main():
     # Create problem
     prob = LpProblem("toyFactory", LpMaximize)
     # Read input
     t, p, max = map(int, input().split())
-    time_1=time()
     # Initialize lists for data
     ls, cs, x = [0], [0], [None]
     sets = [[i] for i in range(t + 1)]
@@ -41,9 +39,7 @@ def main():
     prob += lpSum([x[i] * ls[i] for i in range(1, len(x))]), "objective function"
     # Solve problem
     prob.solve(GLPK(msg = 0))
-    time_2=time()
     # Print solution
-    print(f"{time_2-time_1:.4f}")
     if LpStatus[prob.status] != "Optimal":
         print("Infeasible")
     else:
