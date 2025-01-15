@@ -1,5 +1,3 @@
-# ASA-Cpp-Python
-
 3 Projects made during Analysis and Synthesis of Algorithms class:
 
 Proj 1 - Cpp: Dynamic Programming adaptation of the Knapsack algorithm for 2 dimensions;
